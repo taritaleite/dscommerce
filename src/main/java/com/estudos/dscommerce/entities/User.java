@@ -14,6 +14,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    //o campo será unico no momento de converter para o BD
+    @Column(unique = true)
     private String email;
     private String phone;
     private LocalDate birthDate;
