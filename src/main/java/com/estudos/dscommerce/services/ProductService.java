@@ -5,6 +5,7 @@ import com.estudos.dscommerce.entities.Product;
 import com.estudos.dscommerce.repositories.ProductRepository;
 import com.estudos.dscommerce.services.exceptions.DataBaseException;
 import com.estudos.dscommerce.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -43,11 +44,16 @@ public class ProductService {
 
     @Transactional()
     public ProductDto update(Long id, ProductDto dto) {
-        Product entity = productRepository.getReferenceById(id);
-        copyDtoToEntity(dto, entity);
-        entity = productRepository.save(entity);
-        return new ProductDto(entity);
+        try {
+            Product entity = productRepository.getReferenceById(id);
+            copyDtoToEntity(dto, entity);
+            entity = productRepository.save(entity);
+            return new ProductDto(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Recurso não encontrado");
+        }
     }
+
     @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(Long id) {
         if (!productRepository.existsById(id)) {
